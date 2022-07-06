@@ -17,6 +17,7 @@ export class UserService {
    ){}
 
     create(user: User): Observable<User> {
+
         return this.auth.hashPassword(user.password).pipe(
             switchMap((pasawordHash: string) => {
                 const newUser = new UserEntity();
