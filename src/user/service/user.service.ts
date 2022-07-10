@@ -24,7 +24,8 @@ export class UserService {
                 newUser.name = user.name;
                 newUser.username = user.username;
                 newUser.email = user.email;
-                newUser.password = pasawordHash
+                newUser.password = pasawordHash;
+                newUser.role = user.role;
                 return from(this.userReposotiry.save(newUser)).pipe(
                     map((user: User) => {
                         const { password, ...result } = user;
@@ -36,9 +37,14 @@ export class UserService {
         )
     }
 
+    updateUserRole(id: number, user: User): Observable<any>{
+        return from(this.userReposotiry.update(id, user))
+    }
+
     findOne(id: number): Observable<User> {
-        return from(this.userReposotiry.findOne({ where: { id: id } })).pipe(
+        return from(this.userReposotiry.findOneBy({id})).pipe(
             map((user: User) => {
+                console.log(user);
                 const {password, ...result } = user;
                 return result
             })
@@ -75,22 +81,6 @@ export class UserService {
         )
     }
 
-    // validateUser(email: string, password: string): Observable<User> {
-    //     return this.findByMail(email).pipe(
-    //         switchMap((user: User) => this.auth.comparePassword(password, user.password).pipe(
-    //             map((match: boolean) =>{
-    //                 if(match) {
-    //                     const { password, ...result} = user;
-    //                     return result
-    //                 }
-    //                 else{
-    //                     throw Error
-    //                 }
-    //             })
-    //         ))
-    //     )
-    // }
-
     validateUser(email: string, password: string): Observable<User> {
         return this.findByMail(email).pipe(
             switchMap((user: User) => this.auth.comparePassword(password, user.password).pipe(
@@ -106,8 +96,6 @@ export class UserService {
         )
 
     }
-
-
 
     findByMail(email: string): Observable<User> {
         return from(this.userReposotiry.findOne({where: {email: email}}))
